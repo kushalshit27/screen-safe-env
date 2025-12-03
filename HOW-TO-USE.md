@@ -55,19 +55,33 @@ A comprehensive guide to installing, configuring, and using the Screen-Safe-ENV 
 2. Type "Preferences: Open Settings (JSON)"
 3. Add your configuration
 
+### Global vs Workspace Settings
+
+The extension supports two levels of configuration:
+
+| Level | Location | Use Case |
+|-------|----------|----------|
+| **User Settings** | `~/Library/Application Support/Code/User/settings.json` (Mac) | Global defaults for all projects |
+| **Workspace Settings** | `.vscode/settings.json` in your project | Project-specific overrides |
+
+> **Priority:** Workspace settings override User settings when both are defined.
+
 ### Configuration Examples
 
 #### Example 1: Basic Setup (Default)
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "solid"
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "solid"
+  }
 }
 ```
 
 **Result:**
-```
+
+```text
 API_KEY=*****
 DATABASE_URL=*****
 SECRET_TOKEN=*****
@@ -77,13 +91,16 @@ SECRET_TOKEN=*****
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "lengthPreserving"
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "lengthPreserving"
+  }
 }
 ```
 
 **Result:**
-```
+
+```text
 API_KEY=****************    (matches original length)
 DATABASE_URL=**************************
 SECRET_TOKEN=************
@@ -93,13 +110,16 @@ SECRET_TOKEN=************
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "partial"
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "partial"
+  }
 }
 ```
 
 **Result:**
-```
+
+```text
 API_KEY=sk***ey            (shows first 2 and last 2 chars)
 DATABASE_URL=po***ql
 SECRET_TOKEN=gh***en
@@ -109,13 +129,15 @@ SECRET_TOKEN=gh***en
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.include": [
-    "**/.env*",
-    "*.env",
-    "**/secrets/**/*.env",
-    "**/.secrets"
-  ]
+  "screenSafeEnv": {
+    "enable": true,
+    "include": [
+      "**/.env*",
+      "*.env",
+      "**/secrets/**/*.env",
+      "**/.secrets"
+    ]
+  }
 }
 ```
 
@@ -123,20 +145,23 @@ SECRET_TOKEN=gh***en
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.excludeKeys": [
-    "PORT",
-    "DEBUG",
-    "NODE_ENV",
-    "LOG_LEVEL",
-    "HOST",
-    "HOSTNAME"
-  ]
+  "screenSafeEnv": {
+    "enable": true,
+    "excludeKeys": [
+      "PORT",
+      "DEBUG",
+      "NODE_ENV",
+      "LOG_LEVEL",
+      "HOST",
+      "HOSTNAME"
+    ]
+  }
 }
 ```
 
 **Result:**
-```
+
+```text
 PORT=3000                   (visible - excluded)
 DEBUG=true                  (visible - excluded)
 NODE_ENV=development        (visible - excluded)
@@ -148,8 +173,10 @@ DATABASE_URL=*****         (masked)
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.hoverReveal": true
+  "screenSafeEnv": {
+    "enable": true,
+    "hoverReveal": true
+  }
 }
 ```
 
@@ -159,45 +186,96 @@ When you hover over a masked value, a tooltip shows the actual value with a priv
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.revealHoldMs": 5000
+  "screenSafeEnv": {
+    "enable": true,
+    "revealHoldMs": 5000
+  }
 }
 ```
 
 The "Temporarily Reveal Values" command will show values for 5 seconds instead of the default 3 seconds.
 
-#### Example 8: Full Configuration
+#### Example 8: Full Configuration (User Settings)
 
 ```json
 {
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "partial",
-  "screenSafeEnv.include": [
-    "**/.env*",
-    "*.env",
-    "**/config/secrets.*"
-  ],
-  "screenSafeEnv.excludeKeys": [
-    "PORT",
-    "DEBUG",
-    "NODE_ENV",
-    "LOG_LEVEL"
-  ],
-  "screenSafeEnv.hoverReveal": false,
-  "screenSafeEnv.revealHoldMs": 3000
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "partial",
+    "include": [
+      "**/.env*",
+      "*.env",
+      "**/config/secrets.*"
+    ],
+    "excludeKeys": [
+      "PORT",
+      "DEBUG",
+      "NODE_ENV",
+      "LOG_LEVEL"
+    ],
+    "hoverReveal": false,
+    "revealHoldMs": 3000
+  }
 }
 ```
 
+#### Example 9: Workspace Settings (`.vscode/settings.json`)
+
+Create a `.vscode/settings.json` file in your project root to override global settings:
+
+```json
+{
+  "screenSafeEnv": {
+    "excludeKeys": [
+      "PORT",
+      "DEBUG",
+      "NODE_ENV",
+      "APP_NAME",
+      "APP_VERSION"
+    ],
+    "maskMode": "lengthPreserving"
+  }
+}
+```
+
+This allows different projects to have different masking configurations.
+
 ### Configuration Reference
+
+All settings are under the `screenSafeEnv` namespace:
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `screenSafeEnv.enable` | boolean | `true` | Master switch to enable/disable masking |
-| `screenSafeEnv.maskMode` | enum | `"solid"` | `"solid"`, `"lengthPreserving"`, or `"partial"` |
-| `screenSafeEnv.include` | array | `["**/.env*", "*.env"]` | Glob patterns for files to process |
-| `screenSafeEnv.excludeKeys` | array | `["PORT", "DEBUG"]` | Keys whose values remain visible |
-| `screenSafeEnv.hoverReveal` | boolean | `false` | Show actual value on hover |
-| `screenSafeEnv.revealHoldMs` | number | `3000` | Duration (ms) for temporary reveal (500-30000) |
+| `enable` | boolean | `true` | Master switch to enable/disable masking |
+| `maskMode` | enum | `"solid"` | `"solid"`, `"lengthPreserving"`, or `"partial"` |
+| `include` | array | `["**/.env*", "*.env"]` | Glob patterns for files to process |
+| `excludeKeys` | array | `["PORT", "DEBUG"]` | Keys whose values remain visible |
+| `hoverReveal` | boolean | `false` | Show actual value on hover |
+| `revealHoldMs` | number | `3000` | Duration (ms) for temporary reveal (500-30000) |
+
+> **Note:** You can also use the flat format (`"screenSafeEnv.enable": true`) but the nested format is recommended for better organization.
+
+#### Both Configuration Formats Supported
+
+The extension supports both nested and flat configuration formats:
+
+**Nested (Recommended):**
+```json
+{
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "solid"
+  }
+}
+```
+
+**Flat:**
+```json
+{
+  "screenSafeEnv.enable": true,
+  "screenSafeEnv.maskMode": "solid"
+}
+```
 
 ---
 
@@ -323,7 +401,7 @@ GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxx
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - VS Code 1.85+
 - Git
 

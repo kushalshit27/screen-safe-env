@@ -32,16 +32,57 @@ The extension activates automatically for `.env` files.
 
 ### Configuration
 
-You can customize the extension in your VS Code `settings.json`:
+You can customize the extension in your VS Code `settings.json`. The extension supports both **User Settings** (global) and **Workspace Settings** (per-project).
+
+#### Example Configuration
+
+```json
+{
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "partial",
+    "include": ["**/.env*", "*.env"],
+    "excludeKeys": ["PORT", "DEBUG", "NODE_ENV"],
+    "hoverReveal": false,
+    "revealHoldMs": 3000
+  }
+}
+```
+
+#### Settings Reference
 
 | Setting | Default | Description |
 | :--- | :--- | :--- |
-| `screenSafeEnv.enable` | `true` | Enable/disable the extension. |
-| `screenSafeEnv.maskMode` | `"solid"` | Mask style: `"solid"`, `"lengthPreserving"`, or `"partial"`. |
-| `screenSafeEnv.include` | `["**/.env*", "*.env"]` | Glob patterns for files to process. |
-| `screenSafeEnv.excludeKeys` | `["PORT", "DEBUG"]` | List of keys to keep visible. |
-| `screenSafeEnv.hoverReveal` | `false` | Allow revealing values by hovering over them. |
-| `screenSafeEnv.revealHoldMs` | `3000` | Duration (ms) for temporary reveal. |
+| `enable` | `true` | Enable/disable the extension. |
+| `maskMode` | `"solid"` | Mask style: `"solid"`, `"lengthPreserving"`, or `"partial"`. |
+| `include` | `["**/.env*", "*.env"]` | Glob patterns for files to process. |
+| `excludeKeys` | `["PORT", "DEBUG"]` | List of keys to keep visible. |
+| `hoverReveal` | `false` | Allow revealing values by hovering over them. |
+| `revealHoldMs` | `3000` | Duration (ms) for temporary reveal. |
+
+> **Tip:** Use Workspace Settings (`.vscode/settings.json`) for project-specific configurations that differ from your global preferences.
+
+#### Both Configuration Formats Supported
+
+The extension supports both nested and flat configuration formats:
+
+**Nested (Recommended):**
+```json
+{
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "solid"
+  }
+}
+```
+
+**Flat:**
+```json
+{
+  "screenSafeEnv.enable": true,
+  "screenSafeEnv.maskMode": "solid"
+}
+```
 
 ## Safety & Privacy
 

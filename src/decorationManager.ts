@@ -30,15 +30,11 @@ export class DecorationManager {
 			this.decorationType.dispose();
 		}
 
-		// Create decoration with a mask appearance
-		// We use `after` content to overlay the mask text
+		// Create decoration that hides the original text
+		// The mask is rendered using 'before' pseudo-element in per-decoration renderOptions
 		this.decorationType = vscode.window.createTextEditorDecorationType({
-			opacity: '0',
-			after: {
-				contentText: '', // Will be set per-decoration
-				color: new vscode.ThemeColor('editorInfo.foreground'),
-				backgroundColor: new vscode.ThemeColor('editor.selectionBackground'),
-			},
+			opacity: '0',  // Hide the original value text
+			textDecoration: 'none',
 		});
 	}
 
@@ -142,10 +138,12 @@ export class DecorationManager {
 
 		const maskText = this.generateMask(entry.value, mode);
 
+		// Calculate the width to pull the mask back over the hidden text
+		// We use a CSS trick: hide the original text and position the mask at the start
 		return {
 			range,
 			renderOptions: {
-				after: {
+				before: {
 					contentText: maskText,
 					color: new vscode.ThemeColor('editorInfo.foreground'),
 					backgroundColor: new vscode.ThemeColor('editor.selectionBackground'),
