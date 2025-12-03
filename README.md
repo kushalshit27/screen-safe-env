@@ -1,6 +1,13 @@
 # Screen-Safe-ENV
 
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/kushalshit27.screen-safe-env?style=flat-square&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/kushalshit27.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/kushalshit27.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+
 **Visually conceal sensitive environment variables in VS Code during screen sharing, streaming, or recording.**
+
+![Screen Safe ENV Demo](images/demo.gif)
 
 Screen-Safe-ENV helps developers protect sensitive data (like API keys, passwords, and tokens) in `.env` files by visually masking them in the editor. The underlying file content remains unchanged—only the display is altered.
 
@@ -39,8 +46,11 @@ You can customize the extension in your VS Code `settings.json`:
 ## Safety & Privacy
 
 - **Visual Only**: This extension uses VS Code's decoration API to hide text. It does not encrypt your files.
-- **No Telemetry of Secrets**: We never read, store, or transmit your secret values.
+- **No File Modifications**: The extension never writes to, modifies, or edits any files. All masking is purely visual.
+- **No Telemetry**: This extension does not collect, store, or transmit any data whatsoever. Your secrets remain entirely on your machine.
+- **No Network Requests**: The extension operates completely offline with no external dependencies or API calls.
 - **Workspace Trust**: The extension respects VS Code's Workspace Trust and will not operate in untrusted workspaces by default.
+- **Open Source**: All code is available for review at [GitHub](https://github.com/kushalshit27/screen-safe-env).
 
 ## License
 

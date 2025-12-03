@@ -1,21 +1,150 @@
 {
   "name": "screen-safe-env",
-  "displayName": "screen-safe-env",
-  "description": "Screen-Safe-ENV helps developers protect sensitive data.",
-  "version": "0.0.1",
+  "displayName": "Screen Safe ENV",
+  "description": "Visually conceal sensitive environment variables in VS Code during screen sharing, streaming, or recording.",
+  "version": "1.0.0",
+  "publisher": "kushalshit27",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kushalshit27/screen-safe-env"
+  },
+  "bugs": {
+    "url": "https://github.com/kushalshit27/screen-safe-env/issues"
+  },
+  "homepage": "https://github.com/kushalshit27/screen-safe-env#readme",
+  "license": "MIT",
   "engines": {
-    "vscode": "^1.106.1"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "env",
+    "environment",
+    "secrets",
+    "mask",
+    "screen-share",
+    "privacy"
+  ],
   "activationEvents": [],
   "main": "./dist/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "This extension is disabled in untrusted workspaces for security."
+    }
+  },
   "contributes": {
+    "languages": [
+      {
+        "id": "dotenv",
+        "aliases": [
+          "Environment Variables",
+          "dotenv",
+          "env"
+        ],
+        "extensions": [
+          ".env",
+          ".env.local",
+          ".env.development",
+          ".env.production",
+          ".env.test",
+          ".env.staging",
+          ".env.example"
+        ],
+        "filenames": [
+          ".env"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": {
+      "title": "Screen Safe ENV",
+      "properties": {
+        "screenSafeEnv.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable visual masking of environment variable values."
+        },
+        "screenSafeEnv.maskMode": {
+          "type": "string",
+          "default": "solid",
+          "enum": [
+            "solid",
+            "lengthPreserving",
+            "partial"
+          ],
+          "enumDescriptions": [
+            "Replace entire value with a fixed-length block (e.g., *****)",
+            "Replace each character with a mask character, preserving length",
+            "Show first and last characters, mask the middle"
+          ],
+          "description": "Mask style for concealing values."
+        },
+        "screenSafeEnv.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/.env*",
+            "*.env"
+          ],
+          "description": "Glob patterns for files to process."
+        },
+        "screenSafeEnv.excludeKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "PORT",
+            "DEBUG"
+          ],
+          "description": "List of keys whose values should remain visible."
+        },
+        "screenSafeEnv.hoverReveal": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow revealing masked values by hovering over them."
+        },
+        "screenSafeEnv.revealHoldMs": {
+          "type": "number",
+          "default": 3000,
+          "minimum": 500,
+          "maximum": 30000,
+          "description": "Duration (ms) for the temporary reveal command."
+        }
+      }
+    },
     "commands": [
       {
-        "command": "screen-safe-env.helloWorld",
-        "title": "Hello World"
+        "command": "screen-safe-env.toggleHideShow",
+        "title": "Screen Safe Env: Toggle Hide/Show"
+      },
+      {
+        "command": "screen-safe-env.temporarilyReveal",
+        "title": "Screen Safe Env: Temporarily Reveal Values"
+      },
+      {
+        "command": "screen-safe-env.forceRescan",
+        "title": "Screen Safe Env: Force Rescan Current File"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "screen-safe-env.toggleHideShow",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "editorLangId == dotenv"
+      },
+      {
+        "command": "screen-safe-env.temporarilyReveal",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorLangId == dotenv"
       }
     ]
   },
