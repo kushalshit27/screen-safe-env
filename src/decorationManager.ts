@@ -30,10 +30,11 @@ export class DecorationManager {
 			this.decorationType.dispose();
 		}
 
-		// Create decoration that hides the original text
+		// Create decoration that hides the original text visually but keeps it interactable
+		// Using color: 'transparent' allows hover events to still work (unlike opacity: '0')
 		// The mask is rendered using 'before' pseudo-element in per-decoration renderOptions
 		this.decorationType = vscode.window.createTextEditorDecorationType({
-			opacity: '0',  // Hide the original value text
+			color: 'transparent',  // Hide text color while keeping element interactable for hover
 			textDecoration: 'none',
 		});
 	}
@@ -41,24 +42,24 @@ export class DecorationManager {
 	/**
 	 * Gets the current mask mode from configuration.
 	 */
-	private getMaskMode(): MaskMode {
-		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	private getMaskMode(documentUri?: vscode.Uri): MaskMode {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
 		return config.get<MaskMode>('maskMode', 'solid');
 	}
 
 	/**
 	 * Gets the excluded keys from configuration.
 	 */
-	private getExcludedKeys(): string[] {
-		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	private getExcludedKeys(documentUri?: vscode.Uri): string[] {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
 		return config.get<string[]>('excludeKeys', ['PORT', 'DEBUG']);
 	}
 
 	/**
 	 * Checks if masking is enabled.
 	 */
-	private isEnabled(): boolean {
-		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	private isEnabled(documentUri?: vscode.Uri): boolean {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
 		return config.get<boolean>('enable', true);
 	}
 
@@ -101,7 +102,7 @@ export class DecorationManager {
 		}
 
 		// Check if masking is enabled
-		if (!this.isEnabled()) {
+		if (!this.isEnabled(editor.document.uri)) {
 			this.clearDecorations(editor);
 			return;
 		}
@@ -112,8 +113,8 @@ export class DecorationManager {
 		}
 
 		const entries = parseEnvDocument(editor.document);
-		const filteredEntries = filterExcludedKeys(entries, this.getExcludedKeys());
-		const maskMode = this.getMaskMode();
+		const filteredEntries = filterExcludedKeys(entries, this.getExcludedKeys(editor.document.uri));
+		const maskMode = this.getMaskMode(editor.document.uri);
 
 		const decorations: vscode.DecorationOptions[] = filteredEntries
 			.filter((entry) => entry.value.length > 0) // Skip empty values

@@ -38,14 +38,12 @@ You can customize the extension in your VS Code `settings.json`. The extension s
 
 ```json
 {
-  "screenSafeEnv": {
-    "enable": true,
-    "maskMode": "partial",
-    "include": ["**/.env*", "*.env"],
-    "excludeKeys": ["PORT", "DEBUG", "NODE_ENV"],
-    "hoverReveal": false,
-    "revealHoldMs": 3000
-  }
+  "screenSafeEnv.enable": true,
+  "screenSafeEnv.maskMode": "partial",
+  "screenSafeEnv.include": ["**/.env*", "*.env"],
+  "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_ENV"],
+  "screenSafeEnv.hoverReveal": false,
+  "screenSafeEnv.revealHoldMs": 3000
 }
 ```
 
@@ -62,25 +60,31 @@ You can customize the extension in your VS Code `settings.json`. The extension s
 
 > **Tip:** Use Workspace Settings (`.vscode/settings.json`) for project-specific configurations that differ from your global preferences.
 
-#### Both Configuration Formats Supported
+#### Example settings.json
 
-The extension supports both nested and flat configuration formats:
+You can use either the **flat** or **nested** form; both are supported by VS Code. For clarity, the flat form works well in `settings.json`.
 
-**Nested (Recommended):**
+**Flat form (recommended for settings.json):**
+
+```json
+{
+  "screenSafeEnv.enable": true,
+  "screenSafeEnv.maskMode": "solid",
+  "screenSafeEnv.hoverReveal": true,
+  "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_ENV"]
+}
+```
+
+**Nested form (also supported):**
+
 ```json
 {
   "screenSafeEnv": {
     "enable": true,
-    "maskMode": "solid"
+    "maskMode": "solid",
+    "hoverReveal": true,
+    "excludeKeys": ["PORT", "DEBUG", "NODE_ENV"]
   }
-}
-```
-
-**Flat:**
-```json
-{
-  "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "solid"
 }
 ```
 

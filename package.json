@@ -1,7 +1,7 @@
 {
   "name": "screen-safe-env",
-  "displayName": "Screen Safe ENV",
-  "description": "Visually conceal sensitive environment variables in VS Code during screen sharing, streaming, or recording.",
+  "displayName": "Screen Safe ENV(config)",
+  "description": "Hide sensitive config variables in VS Code during screen sharing, streaming, or recording.",
   "version": "1.0.0",
   "publisher": "kushalshit27",
   "icon": "images/icon.png",
@@ -15,7 +15,7 @@
   "homepage": "https://github.com/kushalshit27/screen-safe-env#readme",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.106.0"
   },
   "categories": [
     "Other"

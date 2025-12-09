@@ -68,6 +68,30 @@ The extension supports two levels of configuration:
 
 ### Configuration Examples
 
+You can use either **nested** or **flat** settings; both are supported. Flat keys are often convenient in `settings.json`, while nested keeps related keys grouped. Here’s a quick mapping:
+
+**Flat:**
+
+```json
+{
+  "screenSafeEnv.enable": true,
+  "screenSafeEnv.maskMode": "solid",
+  "screenSafeEnv.hoverReveal": true
+}
+```
+
+**Nested:**
+
+```json
+{
+  "screenSafeEnv": {
+    "enable": true,
+    "maskMode": "solid",
+    "hoverReveal": true
+  }
+}
+```
+
 #### Example 1: Basic Setup (Default)
 
 ```json
@@ -180,6 +204,15 @@ DATABASE_URL=*****         (masked)
 }
 ```
 
+Flat equivalent:
+
+```json
+{
+  "screenSafeEnv.enable": true,
+  "screenSafeEnv.hoverReveal": true
+}
+```
+
 When you hover over a masked value, a tooltip shows the actual value with a privacy warning.
 
 #### Example 7: Custom Reveal Duration
@@ -253,13 +286,14 @@ All settings are under the `screenSafeEnv` namespace:
 | `hoverReveal` | boolean | `false` | Show actual value on hover |
 | `revealHoldMs` | number | `3000` | Duration (ms) for temporary reveal (500-30000) |
 
-> **Note:** You can also use the flat format (`"screenSafeEnv.enable": true`) but the nested format is recommended for better organization.
+> **Note:** You can use either flat (`"screenSafeEnv.enable": true`) or nested (`"screenSafeEnv": { "enable": true }`) formats; both are supported. Choose whichever you prefer for your settings file.
 
 #### Both Configuration Formats Supported
 
 The extension supports both nested and flat configuration formats:
 
-**Nested (Recommended):**
+**Nested:**
+
 ```json
 {
   "screenSafeEnv": {
@@ -270,6 +304,7 @@ The extension supports both nested and flat configuration formats:
 ```
 
 **Flat:**
+
 ```json
 {
   "screenSafeEnv.enable": true,
@@ -292,15 +327,18 @@ The extension supports both nested and flat configuration formats:
 ### Using Commands
 
 **Via Command Palette:**
+
 1. Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
 2. Type "Screen Safe Env"
 3. Select the desired command
 
 **Via Keybindings:**
+
 - Toggle masking: `Cmd+Shift+E` / `Ctrl+Shift+E`
 - Temporary reveal: `Cmd+Shift+R` / `Ctrl+Shift+R`
 
 **Via Status Bar:**
+
 - Click the status bar item (bottom right) to toggle masking
 
 ### Custom Keybindings
@@ -354,13 +392,14 @@ GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxx
 
 1. Open the `.env` file in VS Code
 2. Values should be masked automatically:
-   ```
-   DATABASE_URL=*****
-   DB_PASSWORD=*****
-   API_KEY=*****
-   PORT=3000          ← Visible (excluded by default)
-   DEBUG=true         ← Visible (excluded by default)
-   ```
+
+  ```text
+  DATABASE_URL=*****
+  DB_PASSWORD=*****
+  API_KEY=*****
+  PORT=3000          ← Visible (excluded by default)
+  DEBUG=true         ← Visible (excluded by default)
+  ```
 
 ### Step 3: Test Toggle Command
 

@@ -13,31 +13,39 @@ import { parseEnvDocument, filterExcludedKeys, EnvEntry } from './envParser';
  */
 export class EnvHoverProvider implements vscode.HoverProvider {
 	/**
+	 * Gets a configuration object scoped to the current document URI if provided.
+	 */
+	private getConfig(documentUri?: vscode.Uri): vscode.WorkspaceConfiguration {
+		return vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
+	}
+
+	/**
 	 * Checks if hover reveal is enabled in configuration.
 	 */
-	private isHoverRevealEnabled(): boolean {
-		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	private isHoverRevealEnabled(documentUri?: vscode.Uri): boolean {
+		const config = this.getConfig(documentUri);
 		return config.get<boolean>('hoverReveal', false);
 	}
 
 	/**
 	 * Checks if masking is enabled.
 	 */
-	private isMaskingEnabled(): boolean {
-		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	private isMaskingEnabled(documentUri?: vscode.Uri): boolean {
+		const config = this.getConfig(documentUri);
 		return config.get<boolean>('enable', true);
 	}
 
 	/**
 	 * Gets the excluded keys from configuration.
 	 */
-	private getExcludedKeys(): string[] {
-		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	private getExcludedKeys(documentUri?: vscode.Uri): string[] {
+		const config = this.getConfig(documentUri);
 		return config.get<string[]>('excludeKeys', ['PORT', 'DEBUG']);
 	}
 
 	/**
 	 * Finds the entry at the given position.
+	 * Checks if the cursor is on the value portion of an env entry.
 	 */
 	private findEntryAtPosition(
 		entries: EnvEntry[],
@@ -47,9 +55,10 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 			if (entry.line !== position.line) {
 				return false;
 			}
-			// Check if position is within the value range
-			return position.character >= entry.valueStart && 
-			       position.character <= entry.valueEnd;
+			// valueEnd is exclusive; allow an inclusive hover window with tolerance
+			const start = Math.max(0, entry.valueStart - 2); // tolerate slight offsets (mask rendering)
+			const endInclusive = Math.max(start, entry.valueEnd - 1 + 2); // include a couple chars past end
+			return position.character >= start && position.character <= endInclusive;
 		});
 	}
 
@@ -61,25 +70,53 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 		position: vscode.Position,
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Hover> {
+		console.log(`[Screen Safe ENV] provideHover called - lang: ${document.languageId}, pos: ${position.line}:${position.character}`);
+		
 		// Only provide hover if both masking and hover reveal are enabled
-		if (!this.isMaskingEnabled() || !this.isHoverRevealEnabled()) {
+		if (!this.isMaskingEnabled(document.uri)) {
+			console.log('[Screen Safe ENV] Masking is disabled, skipping hover');
+			return null;
+		}
+		
+		if (!this.isHoverRevealEnabled(document.uri)) {
+			console.log('[Screen Safe ENV] Hover reveal is disabled, skipping hover');
 			return null;
 		}
 
 		// Parse the document
 		const entries = parseEnvDocument(document);
-		const excludedKeys = this.getExcludedKeys();
+		const excludedKeys = this.getExcludedKeys(document.uri);
 		const filteredEntries = filterExcludedKeys(entries, excludedKeys);
+		
+		console.log(`[Screen Safe ENV] Found ${filteredEntries.length} entries`);
 
 		// Find the entry at the hover position
 		const entry = this.findEntryAtPosition(filteredEntries, position);
-		if (!entry || entry.value.length === 0) {
+		if (!entry) {
+			console.log('[Screen Safe ENV] No entry found at position', {
+				position: { line: position.line, character: position.character },
+				entries: filteredEntries.map((e) => ({
+					key: e.key,
+					line: e.line,
+					valueStart: e.valueStart,
+					valueEnd: e.valueEnd,
+					value: e.value,
+				})),
+			});
 			return null;
 		}
+		
+		if (entry.value.length === 0) {
+			console.log('[Screen Safe ENV] Entry has empty value, skipping hover');
+			return null;
+		}
+		
+		console.log(`[Screen Safe ENV] Showing hover for ${entry.key}`);
 
 		// Create hover content with privacy warning
 		const hoverContent = new vscode.MarkdownString();
 		hoverContent.isTrusted = true;
+		hoverContent.supportThemeIcons = true;  // Enable $(icon) syntax
 
 		// Add privacy warning icon and text
 		hoverContent.appendMarkdown('$(warning) **Screen Safe ENV - Hover Reveal**\n\n');
@@ -116,10 +153,16 @@ export function registerHoverProvider(
 	context: vscode.ExtensionContext
 ): vscode.Disposable {
 	const provider = new EnvHoverProvider();
-	const registration = vscode.languages.registerHoverProvider(
+	// Register for dotenv language plus .env patterns to catch cases where language id isn't set
+	const selectors: vscode.DocumentSelector = [
+		{ language: 'dotenv', scheme: 'file' },
+		{ language: 'dotenv', scheme: 'untitled' },
 		{ language: 'dotenv' },
-		provider
-	);
+		{ scheme: 'file', pattern: '**/.env*' },
+		{ scheme: 'file', pattern: '**/*.env' },
+	];
+
+	const registration = vscode.languages.registerHoverProvider(selectors, provider);
 	context.subscriptions.push(registration);
 	return registration;
 }
