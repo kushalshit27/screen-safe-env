@@ -6,3 +6,4 @@ node_modules
 .github/copilot-instructions.md
 .github/agents/*
 plan/*
+.DS_Store
