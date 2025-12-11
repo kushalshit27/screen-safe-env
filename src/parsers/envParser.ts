@@ -49,10 +49,10 @@ export function parseEnvDocument(document: vscode.TextDocument): EnvEntry[] {
 			continue;
 		}
 
-		// Match KEY=VALUE pattern
+		// Match KEY=VALUE pattern with optional 'export' prefix
 		// Key: starts with letter or underscore, followed by alphanumeric or underscore
 		// Value: everything after the first =
-		const match = text.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)/);
+		const match = text.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)/);
 		if (!match) {
 			continue;
 		}
@@ -60,8 +60,9 @@ export function parseEnvDocument(document: vscode.TextDocument): EnvEntry[] {
 		const key = match[1];
 		const rawValue = match[2];
 
-		// Calculate value start position
-		const equalsIndex = text.indexOf('=');
+		// Calculate value start position (find the = after the key)
+		const keyIndex = text.indexOf(key);
+		const equalsIndex = text.indexOf('=', keyIndex + key.length);
 		let valueStart = equalsIndex + 1;
 
 		// Skip whitespace after =

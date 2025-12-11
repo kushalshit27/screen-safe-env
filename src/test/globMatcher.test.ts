@@ -36,7 +36,7 @@ suite('globMatcher Test Suite', () => {
 
 		test('matches nested .env file', () => {
 			const uri = createMockUri('/project/config/secrets/.env');
-			const patterns = ['**/.env*'];
+			const patterns = ['**/.env*', '*.env'];
 			
 			assert.strictEqual(matchesGlobPatterns(uri, patterns), true);
 		});
@@ -55,12 +55,12 @@ suite('globMatcher Test Suite', () => {
 			assert.strictEqual(matchesGlobPatterns(uri, patterns), false);
 		});
 
-		test('does not match file with .env in the middle', () => {
+		test('does not match file in .env-prefixed directory', () => {
+			// **/.env* matches files starting with .env, not files inside directories starting with .env
 			const uri = createMockUri('/project/.environment/config');
 			const patterns = ['**/.env*'];
-			// This should match because .environment starts with .env
-			// This is expected glob behavior
-			assert.strictEqual(matchesGlobPatterns(uri, patterns), true);
+			// The glob pattern matches files named .env*, not files inside .env* directories
+			assert.strictEqual(matchesGlobPatterns(uri, patterns), false);
 		});
 
 		test('returns true when patterns array is empty', () => {

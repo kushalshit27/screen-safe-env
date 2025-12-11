@@ -350,12 +350,12 @@ Add to your `keybindings.json`:
   {
     "key": "ctrl+alt+m",
     "command": "screen-safe-env.toggleHideShow",
-    "when": "editorLangId == dotenv"
+    "when": "editorLangId == dotenv || editorLangId == json || editorLangId == yaml"
   },
   {
     "key": "ctrl+alt+r",
     "command": "screen-safe-env.temporarilyReveal",
-    "when": "editorLangId == dotenv"
+    "when": "editorLangId == dotenv || editorLangId == json || editorLangId == yaml"
   }
 ]
 ```
@@ -428,7 +428,39 @@ GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxx
    - `lengthPreserving`: `API_KEY=********************`
    - `partial`: `API_KEY=sk***ef`
 
-### Step 7: Test Hover Reveal (Optional)
+### Step 7: Test JSON Config Files
+
+1. Add `**/config.json` to your `include` patterns
+2. Create a `config.json` file:
+
+```json
+{
+  "database": {
+    "host": "localhost",
+    "password": "secret123"
+  },
+  "apiKey": "sk-1234567890"
+}
+```
+
+3. String values should be masked: `"password": "*****"`
+
+### Step 8: Test YAML Config Files
+
+1. Add `**/secrets.yaml` to your `include` patterns
+2. Create a `secrets.yaml` file:
+
+```yaml
+database:
+  host: localhost
+  password: secret123
+apiKey: sk-1234567890
+port: 3000  # Will be visible if excluded
+```
+
+3. Values should be masked: `password: *****`
+
+### Step 9: Test Hover Reveal (Optional)
 
 1. Enable: `"screenSafeEnv.hoverReveal": true`
 2. Hover over a masked value
@@ -468,7 +500,7 @@ npm run compile
 ### Run Tests
 
 ```bash
-npm test
+npm test  # Runs all 118 tests
 ```
 
 ### Package Extension
@@ -501,13 +533,13 @@ This creates a `.vsix` file you can install locally.
 
 1. **Check conflicts**: Press `Cmd+K Cmd+S` to open Keyboard Shortcuts
 2. **Search for conflicts**: Look for `Cmd+Shift+E` or `Ctrl+Shift+E`
-3. **Verify context**: Keybindings only work in `.env` files (`editorLangId == dotenv`)
+3. **Verify context**: Keybindings work in `.env`, `.json`, and `.yaml` files
 
 ### Status Bar Not Visible
 
 1. **Check status bar visibility**: View → Appearance → Show Status Bar
 2. **Check position**: Look at the right side of the status bar
-3. **Open a .env file**: Status bar only appears when viewing `.env` files
+3. **Open a config file**: Status bar appears when viewing `.env`, `.json`, or `.yaml` files that match include patterns
 
 ### Performance Issues
 

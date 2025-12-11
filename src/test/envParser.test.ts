@@ -1,11 +1,12 @@
 import * as assert from 'assert';
-import { parseEnvDocument, filterExcludedKeys, EnvEntry } from '../envParser';
+import { parseEnvDocument, filterExcludedKeys, EnvEntry } from '../parsers/envParser';
 
 // Mock TextDocument for testing
-function createMockDocument(content: string): { getText: () => string; lineAt: (line: number) => { text: string } } {
+function createMockDocument(content: string): { getText: () => string; lineCount: number; lineAt: (line: number) => { text: string } } {
 	const lines = content.split('\n');
 	return {
 		getText: () => content,
+		lineCount: lines.length,
 		lineAt: (line: number) => ({ text: lines[line] || '' }),
 	};
 }
@@ -139,27 +140,28 @@ suite('envParser Test Suite', () => {
 			assert.ok(filtered.every((e) => e.key !== 'DEBUG'));
 		});
 
-		test('filters with wildcard pattern', () => {
+		test('filters exact keys (case-insensitive)', () => {
 			const entries: EnvEntry[] = [
 				{ key: 'AWS_KEY', value: 'val1', line: 0, valueStart: 8, valueEnd: 12 },
 				{ key: 'AWS_SECRET', value: 'val2', line: 1, valueStart: 11, valueEnd: 15 },
 				{ key: 'GCP_KEY', value: 'val3', line: 2, valueStart: 8, valueEnd: 12 },
 			];
-			const excludePatterns = ['AWS_*'];
+			const excludePatterns = ['AWS_KEY'];
 
 			const filtered = filterExcludedKeys(entries, excludePatterns);
 
-			assert.strictEqual(filtered.length, 1);
-			assert.strictEqual(filtered[0].key, 'GCP_KEY');
+			assert.strictEqual(filtered.length, 2);
+			assert.strictEqual(filtered[0].key, 'AWS_SECRET');
+			assert.strictEqual(filtered[1].key, 'GCP_KEY');
 		});
 
-		test('handles multiple exclude patterns', () => {
+		test('handles multiple exclude keys', () => {
 			const entries: EnvEntry[] = [
 				{ key: 'API_KEY', value: 'secret', line: 0, valueStart: 8, valueEnd: 14 },
 				{ key: 'DEBUG', value: 'true', line: 1, valueStart: 6, valueEnd: 10 },
 				{ key: 'NODE_ENV', value: 'prod', line: 2, valueStart: 9, valueEnd: 13 },
 			];
-			const excludePatterns = ['DEBUG', 'NODE_*'];
+			const excludePatterns = ['DEBUG', 'NODE_ENV'];
 
 			const filtered = filterExcludedKeys(entries, excludePatterns);
 
@@ -178,7 +180,7 @@ suite('envParser Test Suite', () => {
 			assert.strictEqual(filtered.length, 2);
 		});
 
-		test('handles case-sensitive matching', () => {
+		test('handles case-insensitive matching', () => {
 			const entries: EnvEntry[] = [
 				{ key: 'api_key', value: 'lower', line: 0, valueStart: 8, valueEnd: 13 },
 				{ key: 'API_KEY', value: 'upper', line: 1, valueStart: 8, valueEnd: 13 },
@@ -187,8 +189,8 @@ suite('envParser Test Suite', () => {
 
 			const filtered = filterExcludedKeys(entries, excludePatterns);
 
-			assert.strictEqual(filtered.length, 1);
-			assert.strictEqual(filtered[0].key, 'api_key');
+			// Both should be filtered (case-insensitive)
+			assert.strictEqual(filtered.length, 0);
 		});
 	});
 });

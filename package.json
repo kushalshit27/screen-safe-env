@@ -92,7 +92,7 @@
             "**/.env*",
             "*.env"
           ],
-          "description": "Glob patterns for files to process."
+          "description": "Glob patterns for files to process. Supports .env, JSON, and YAML files. Examples: '**/.env*', '**/config.json', '**/secrets.yaml'"
         },
         "screenSafeEnv.excludeKeys": {
           "type": "array",
@@ -103,7 +103,7 @@
             "PORT",
             "DEBUG"
           ],
-          "description": "List of keys whose values should remain visible."
+          "description": "List of keys whose values should remain visible (case-insensitive)."
         },
         "screenSafeEnv.hoverReveal": {
           "type": "boolean",
@@ -138,13 +138,13 @@
         "command": "screen-safe-env.toggleHideShow",
         "key": "ctrl+shift+e",
         "mac": "cmd+shift+e",
-        "when": "editorLangId == dotenv"
+        "when": "editorLangId == dotenv || editorLangId == json || editorLangId == jsonc || editorLangId == yaml"
       },
       {
         "command": "screen-safe-env.temporarilyReveal",
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
-        "when": "editorLangId == dotenv"
+        "when": "editorLangId == dotenv || editorLangId == json || editorLangId == jsonc || editorLangId == yaml"
       }
     ]
   },

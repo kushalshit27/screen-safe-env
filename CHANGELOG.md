@@ -42,4 +42,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Future enhancements
+### Added
+
+- **JSON Config File Support**: Mask sensitive values in `.json` config files (e.g., `"apiKey": "*****"`)
+- **YAML Config File Support**: Mask sensitive values in `.yaml`/`.yml` config files (e.g., `apiKey: *****`)
+- **Unified Parser Architecture**: Refactored parsers into `src/parsers/` with common `EnvEntry` interface
+- **Auto File Type Detection**: `parseConfigDocument()` automatically detects and parses .env, JSON, or YAML
+- **Export Prefix Support**: `.env` parser now handles `export VAR=value` syntax
+
+### Changed
+
+- Moved `envParser.ts` to `src/parsers/envParser.ts`
+- Decoration API now uses `color: 'transparent'` instead of `opacity: '0'` for better hover support
+- Configuration now scoped to document URI for proper workspace settings support
+
+### Fixed
+
+- Hover reveal now works correctly when enabled
+- Workspace settings properly override user settings

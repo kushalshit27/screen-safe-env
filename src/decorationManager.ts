@@ -1,10 +1,10 @@
 /**
  * decorationManager.ts
- * Manages text decorations for masking .env values in VS Code.
+ * Manages text decorations for masking config values in VS Code.
  */
 
 import * as vscode from 'vscode';
-import { parseEnvDocument, filterExcludedKeys, EnvEntry } from './envParser';
+import { parseConfigDocument, filterExcludedKeys, EnvEntry } from './parsers';
 import { shouldProcessDocument } from './utils/globMatcher';
 
 export type MaskMode = 'solid' | 'lengthPreserving' | 'partial';
@@ -112,7 +112,7 @@ export class DecorationManager {
 			return;
 		}
 
-		const entries = parseEnvDocument(editor.document);
+		const entries = parseConfigDocument(editor.document);
 		const filteredEntries = filterExcludedKeys(entries, this.getExcludedKeys(editor.document.uri));
 		const maskMode = this.getMaskMode(editor.document.uri);
 

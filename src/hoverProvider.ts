@@ -1,14 +1,14 @@
 /**
  * hoverProvider.ts
- * Provides hover information for masked .env values.
+ * Provides hover information for masked config values.
  * Gated by the hoverReveal configuration setting.
  */
 
 import * as vscode from 'vscode';
-import { parseEnvDocument, filterExcludedKeys, EnvEntry } from './envParser';
+import { parseConfigDocument, filterExcludedKeys, EnvEntry } from './parsers';
 
 /**
- * HoverProvider for dotenv files.
+ * HoverProvider for config files (env, JSON, YAML).
  * Shows the actual value when hovering over a masked secret.
  */
 export class EnvHoverProvider implements vscode.HoverProvider {
@@ -84,7 +84,7 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 		}
 
 		// Parse the document
-		const entries = parseEnvDocument(document);
+		const entries = parseConfigDocument(document);
 		const excludedKeys = this.getExcludedKeys(document.uri);
 		const filteredEntries = filterExcludedKeys(entries, excludedKeys);
 		
@@ -146,20 +146,29 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 }
 
 /**
- * Registers the hover provider for dotenv files.
+ * Registers the hover provider for config files (env, JSON, YAML).
  * The provider internally checks the hoverReveal setting.
  */
 export function registerHoverProvider(
 	context: vscode.ExtensionContext
 ): vscode.Disposable {
 	const provider = new EnvHoverProvider();
-	// Register for dotenv language plus .env patterns to catch cases where language id isn't set
+	// Register for all supported file types
 	const selectors: vscode.DocumentSelector = [
+		// dotenv files
 		{ language: 'dotenv', scheme: 'file' },
 		{ language: 'dotenv', scheme: 'untitled' },
 		{ language: 'dotenv' },
 		{ scheme: 'file', pattern: '**/.env*' },
 		{ scheme: 'file', pattern: '**/*.env' },
+		// JSON files
+		{ language: 'json', scheme: 'file' },
+		{ language: 'jsonc', scheme: 'file' },
+		{ scheme: 'file', pattern: '**/*.json' },
+		// YAML files
+		{ language: 'yaml', scheme: 'file' },
+		{ scheme: 'file', pattern: '**/*.yaml' },
+		{ scheme: 'file', pattern: '**/*.yml' },
 	];
 
 	const registration = vscode.languages.registerHoverProvider(selectors, provider);

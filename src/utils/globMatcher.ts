@@ -8,6 +8,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 /**
+ * Supported file types for config masking.
+ */
+const SUPPORTED_LANGUAGE_IDS = ['dotenv', 'json', 'jsonc', 'yaml', 'yml'];
+
+/**
  * Checks if a file URI matches any of the given glob patterns.
  * Patterns are matched against the file path relative to workspace folders.
  *
@@ -90,19 +95,40 @@ export function getIncludePatterns(): string[] {
 }
 
 /**
- * Determines if a document should be processed based on include patterns.
- * First checks language ID, then checks glob patterns.
+ * Determines if a document should be processed based on language ID and include patterns.
+ * Supports .env, JSON, and YAML files.
  *
  * @param document - The text document to check
  * @returns true if the document should have decorations applied
  */
 export function shouldProcessDocument(document: vscode.TextDocument): boolean {
-	// First, check if it's a dotenv file by language ID
-	if (document.languageId !== 'dotenv') {
-		return false;
+	// Check if it's a supported file type by language ID
+	const isSupportedLanguage = SUPPORTED_LANGUAGE_IDS.includes(document.languageId);
+
+	// For dotenv files, always check patterns
+	if (document.languageId === 'dotenv') {
+		const patterns = getIncludePatterns();
+		return matchesGlobPatterns(document.uri, patterns);
 	}
 
-	// Then check against include patterns
-	const patterns = getIncludePatterns();
-	return matchesGlobPatterns(document.uri, patterns);
+	// For JSON/YAML files, must match include patterns explicitly
+	if (isSupportedLanguage || isConfigFileByExtension(document)) {
+		const patterns = getIncludePatterns();
+		return matchesGlobPatterns(document.uri, patterns);
+	}
+
+	return false;
+}
+
+/**
+ * Checks if a document is a config file by extension.
+ */
+function isConfigFileByExtension(document: vscode.TextDocument): boolean {
+	const fileName = document.fileName.toLowerCase();
+	return (
+		fileName.includes('.env') ||
+		fileName.endsWith('.json') ||
+		fileName.endsWith('.yaml') ||
+		fileName.endsWith('.yml')
+	);
 }
