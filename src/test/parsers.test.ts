@@ -96,13 +96,13 @@ suite('Unified Parsers Test Suite', () => {
 			assert.strictEqual(entries[0].value, 'secret123');
 		});
 
-		test('parses JSON files', () => {
+		test('parses JSON files with quotes included', () => {
 			const doc = createMockDocument('{\n  "api_key": "secret123"\n}', 'json', '/project/config.json');
 			const entries = parseConfigDocument(doc as any);
 
 			assert.strictEqual(entries.length, 1);
 			assert.strictEqual(entries[0].key, 'api_key');
-			assert.strictEqual(entries[0].value, 'secret123');
+			assert.strictEqual(entries[0].value, '"secret123"');  // Includes quotes for JSON
 		});
 
 		test('parses YAML files', () => {

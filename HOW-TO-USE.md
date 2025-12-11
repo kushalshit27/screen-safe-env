@@ -1,6 +1,6 @@
-# How to Use Screen-Safe-ENV
+# How to Use Screen-Safe-Env
 
-A comprehensive guide to installing, configuring, and using the Screen-Safe-ENV extension.
+A comprehensive guide to installing, configuring, and using the Screen-Safe-Env extension.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ A comprehensive guide to installing, configuring, and using the Screen-Safe-ENV 
 
 1. Open VS Code
 2. Press `Cmd+Shift+X` (Mac) or `Ctrl+Shift+X` (Windows/Linux) to open Extensions
-3. Search for "Screen Safe ENV"
+3. Search for "Screen Safe Env"
 4. Click **Install**
 
 ### From VSIX File
@@ -36,7 +36,7 @@ A comprehensive guide to installing, configuring, and using the Screen-Safe-ENV 
 
 1. **Open a `.env` file** — The extension activates automatically
 2. **Values are masked** — You'll see `*****` instead of actual values
-3. **Check the status bar** — Look for "🙈 ENV Masked" in the bottom right
+3. **Check the status bar** — Look for "🙈 Env Masked" in the bottom right
 4. **Toggle masking** — Click the status bar item or use `Cmd+Shift+E`
 
 ---
@@ -47,7 +47,7 @@ A comprehensive guide to installing, configuring, and using the Screen-Safe-ENV 
 
 **Option 1: VS Code Settings UI**
 1. Press `Cmd+,` (Mac) or `Ctrl+,` (Windows/Linux)
-2. Search for "Screen Safe ENV"
+2. Search for "Screen Safe Env"
 3. Modify settings as needed
 
 **Option 2: settings.json**
@@ -75,7 +75,7 @@ You can use either **nested** or **flat** settings; both are supported. Flat key
 ```json
 {
   "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "solid",
+  "screenSafeEnv.maskMode": "partial",
   "screenSafeEnv.hoverReveal": true
 }
 ```
@@ -86,7 +86,7 @@ You can use either **nested** or **flat** settings; both are supported. Flat key
 {
   "screenSafeEnv": {
     "enable": true,
-    "maskMode": "solid",
+    "maskMode": "partial",
     "hoverReveal": true
   }
 }
@@ -98,7 +98,7 @@ You can use either **nested** or **flat** settings; both are supported. Flat key
 {
   "screenSafeEnv": {
     "enable": true,
-    "maskMode": "solid"
+    "maskMode": "partial"
   }
 }
 ```
@@ -106,9 +106,9 @@ You can use either **nested** or **flat** settings; both are supported. Flat key
 **Result:**
 
 ```text
-API_KEY=*****
-DATABASE_URL=*****
-SECRET_TOKEN=*****
+API_KEY=sk***ey
+DATABASE_URL=po***ql
+SECRET_TOKEN=gh***en
 ```
 
 #### Example 2: Length-Preserving Masks
@@ -174,7 +174,7 @@ SECRET_TOKEN=gh***en
     "excludeKeys": [
       "PORT",
       "DEBUG",
-      "NODE_ENV",
+      "NODE_Env",
       "LOG_LEVEL",
       "HOST",
       "HOSTNAME"
@@ -188,7 +188,7 @@ SECRET_TOKEN=gh***en
 ```text
 PORT=3000                   (visible - excluded)
 DEBUG=true                  (visible - excluded)
-NODE_ENV=development        (visible - excluded)
+NODE_Env=development        (visible - excluded)
 API_KEY=*****              (masked)
 DATABASE_URL=*****         (masked)
 ```
@@ -243,7 +243,7 @@ The "Temporarily Reveal Values" command will show values for 5 seconds instead o
     "excludeKeys": [
       "PORT",
       "DEBUG",
-      "NODE_ENV",
+      "NODE_Env",
       "LOG_LEVEL"
     ],
     "hoverReveal": false,
@@ -262,7 +262,7 @@ Create a `.vscode/settings.json` file in your project root to override global se
     "excludeKeys": [
       "PORT",
       "DEBUG",
-      "NODE_ENV",
+      "NODE_Env",
       "APP_NAME",
       "APP_VERSION"
     ],
@@ -280,7 +280,7 @@ All settings are under the `screenSafeEnv` namespace:
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
 | `enable` | boolean | `true` | Master switch to enable/disable masking |
-| `maskMode` | enum | `"solid"` | `"solid"`, `"lengthPreserving"`, or `"partial"` |
+| `maskMode` | enum | `"partial"` | `"solid"`, `"lengthPreserving"`, or `"partial"` |
 | `include` | array | `["**/.env*", "*.env"]` | Glob patterns for files to process |
 | `excludeKeys` | array | `["PORT", "DEBUG"]` | Keys whose values remain visible |
 | `hoverReveal` | boolean | `false` | Show actual value on hover |
@@ -298,7 +298,7 @@ The extension supports both nested and flat configuration formats:
 {
   "screenSafeEnv": {
     "enable": true,
-    "maskMode": "solid"
+    "maskMode": "partial"
   }
 }
 ```
@@ -308,7 +308,7 @@ The extension supports both nested and flat configuration formats:
 ```json
 {
   "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "solid"
+  "screenSafeEnv.maskMode": "partial"
 }
 ```
 
@@ -381,7 +381,7 @@ OPENAI_API_KEY=sk-proj-abcdefghijklmnop
 # App Configuration
 PORT=3000
 DEBUG=true
-NODE_ENV=development
+NODE_Env=development
 
 # OAuth Secrets
 GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxx
@@ -416,8 +416,8 @@ GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxx
 ### Step 5: Test Status Bar
 
 1. Look at the bottom right of VS Code
-2. Click "🙈 ENV Masked" to toggle
-3. Status changes to "👁 ENV Visible"
+2. Click "🙈 Env Masked" to toggle
+3. Status changes to "👁 Env Visible"
 
 ### Step 6: Test Mask Modes
 
@@ -527,7 +527,7 @@ This creates a `.vsix` file you can install locally.
 
 1. **Check Workspace Trust**: Extension is disabled in untrusted workspaces
 2. **Reload VS Code**: Press `Cmd+Shift+P` → "Developer: Reload Window"
-3. **Check Output panel**: View → Output → Select "Screen Safe ENV" from dropdown
+3. **Check Output panel**: View → Output → Select "Screen Safe Env" from dropdown
 
 ### Keybindings Not Working
 

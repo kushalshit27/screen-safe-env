@@ -70,16 +70,16 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 		position: vscode.Position,
 		_token: vscode.CancellationToken
 	): vscode.ProviderResult<vscode.Hover> {
-		console.log(`[Screen Safe ENV] provideHover called - lang: ${document.languageId}, pos: ${position.line}:${position.character}`);
+		console.log(`[Screen Safe Env] provideHover called - lang: ${document.languageId}, pos: ${position.line}:${position.character}`);
 		
 		// Only provide hover if both masking and hover reveal are enabled
 		if (!this.isMaskingEnabled(document.uri)) {
-			console.log('[Screen Safe ENV] Masking is disabled, skipping hover');
+			console.log('[Screen Safe Env] Masking is disabled, skipping hover');
 			return null;
 		}
 		
 		if (!this.isHoverRevealEnabled(document.uri)) {
-			console.log('[Screen Safe ENV] Hover reveal is disabled, skipping hover');
+			console.log('[Screen Safe Env] Hover reveal is disabled, skipping hover');
 			return null;
 		}
 
@@ -88,12 +88,12 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 		const excludedKeys = this.getExcludedKeys(document.uri);
 		const filteredEntries = filterExcludedKeys(entries, excludedKeys);
 		
-		console.log(`[Screen Safe ENV] Found ${filteredEntries.length} entries`);
+		console.log(`[Screen Safe Env] Found ${filteredEntries.length} entries`);
 
 		// Find the entry at the hover position
 		const entry = this.findEntryAtPosition(filteredEntries, position);
 		if (!entry) {
-			console.log('[Screen Safe ENV] No entry found at position', {
+			console.log('[Screen Safe Env] No entry found at position', {
 				position: { line: position.line, character: position.character },
 				entries: filteredEntries.map((e) => ({
 					key: e.key,
@@ -107,11 +107,11 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 		}
 		
 		if (entry.value.length === 0) {
-			console.log('[Screen Safe ENV] Entry has empty value, skipping hover');
+			console.log('[Screen Safe Env] Entry has empty value, skipping hover');
 			return null;
 		}
 		
-		console.log(`[Screen Safe ENV] Showing hover for ${entry.key}`);
+		console.log(`[Screen Safe Env] Showing hover for ${entry.key}`);
 
 		// Create hover content with privacy warning
 		const hoverContent = new vscode.MarkdownString();
@@ -119,7 +119,7 @@ export class EnvHoverProvider implements vscode.HoverProvider {
 		hoverContent.supportThemeIcons = true;  // Enable $(icon) syntax
 
 		// Add privacy warning icon and text
-		hoverContent.appendMarkdown('$(warning) **Screen Safe ENV - Hover Reveal**\n\n');
+		hoverContent.appendMarkdown('$(warning) **Screen Safe Env - Hover Reveal**\n\n');
 		hoverContent.appendMarkdown('---\n\n');
 		
 		// Show the key and value

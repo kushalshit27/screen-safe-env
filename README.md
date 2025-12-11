@@ -1,4 +1,4 @@
-# Screen-Safe-ENV
+# Screen-Safe-Env
 
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/kushalshit27.screen-safe-env?style=flat-square&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/kushalshit27.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
@@ -7,9 +7,9 @@
 
 **Visually conceal sensitive config values in VS Code during screen sharing, streaming, or recording.**
 
-![Screen Safe ENV Demo](images/demo.gif)
+![Screen Safe Env Demo](images/demo.gif)
 
-Screen-Safe-ENV helps developers protect sensitive data (like API keys, passwords, and tokens) in `.env`, JSON, and YAML config files by visually masking them in the editor. The underlying file content remains unchanged—only the display is altered.
+Screen-Safe-Env helps developers protect sensitive data (like API keys, passwords, and tokens) in `.env`, JSON, and YAML config files by visually masking them in the editor. The underlying file content remains unchanged—only the display is altered.
 
 ## Features
 
@@ -50,7 +50,7 @@ You can customize the extension in your VS Code `settings.json`. The extension s
   "screenSafeEnv.enable": true,
   "screenSafeEnv.maskMode": "partial",
   "screenSafeEnv.include": ["**/.env*", "*.env", "**/config.json", "**/secrets.yaml"],
-  "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_ENV"],
+  "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_Env"],
   "screenSafeEnv.hoverReveal": false,
   "screenSafeEnv.revealHoldMs": 3000
 }
@@ -61,7 +61,7 @@ You can customize the extension in your VS Code `settings.json`. The extension s
 | Setting | Default | Description |
 | :--- | :--- | :--- |
 | `enable` | `true` | Enable/disable the extension. |
-| `maskMode` | `"solid"` | Mask style: `"solid"`, `"lengthPreserving"`, or `"partial"`. |
+| `maskMode` | `"partial"` | Mask style: `"solid"`, `"lengthPreserving"`, or `"partial"`. |
 | `include` | `["**/.env*", "*.env"]` | Glob patterns for files to process (supports .env, JSON, YAML). |
 | `excludeKeys` | `["PORT", "DEBUG"]` | List of keys to keep visible (case-insensitive). |
 | `hoverReveal` | `false` | Allow revealing values by hovering over them. |
@@ -78,9 +78,9 @@ You can use either the **flat** or **nested** form; both are supported by VS Cod
 ```json
 {
   "screenSafeEnv.enable": true,
-  "screenSafeEnv.maskMode": "solid",
+  "screenSafeEnv.maskMode": "partial",
   "screenSafeEnv.hoverReveal": true,
-  "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_ENV"]
+  "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_Env"]
 }
 ```
 
@@ -90,9 +90,9 @@ You can use either the **flat** or **nested** form; both are supported by VS Cod
 {
   "screenSafeEnv": {
     "enable": true,
-    "maskMode": "solid",
+    "maskMode": "partial",
     "hoverReveal": true,
-    "excludeKeys": ["PORT", "DEBUG", "NODE_ENV"]
+    "excludeKeys": ["PORT", "DEBUG", "NODE_Env"]
   }
 }
 ```

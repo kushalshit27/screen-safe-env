@@ -44,7 +44,7 @@ export class DecorationManager {
 	 */
 	private getMaskMode(documentUri?: vscode.Uri): MaskMode {
 		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
-		return config.get<MaskMode>('maskMode', 'solid');
+		return config.get<MaskMode>('maskMode', 'partial');
 	}
 
 	/**
@@ -65,8 +65,31 @@ export class DecorationManager {
 
 	/**
 	 * Generates a mask string based on the mask mode and value.
+	 * For JSON values that include quotes (e.g., "secret"), the mask preserves the quote style.
 	 */
 	private generateMask(value: string, mode: MaskMode): string {
+		if (value.length === 0) {
+			return '';
+		}
+
+		// Check if value is a quoted JSON string (starts and ends with same quote)
+		const isQuotedJson = (value.startsWith('"') && value.endsWith('"')) ||
+							  (value.startsWith("'") && value.endsWith("'"));
+		
+		if (isQuotedJson) {
+			const quote = value[0];
+			const innerValue = value.slice(1, -1);  // Remove quotes
+			const maskedInner = this.generateMaskForInnerValue(innerValue, mode);
+			return quote + maskedInner + quote;
+		}
+
+		return this.generateMaskForInnerValue(value, mode);
+	}
+
+	/**
+	 * Generates mask for the inner value (without quotes).
+	 */
+	private generateMaskForInnerValue(value: string, mode: MaskMode): string {
 		if (value.length === 0) {
 			return '';
 		}

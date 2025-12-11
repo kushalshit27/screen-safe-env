@@ -85,7 +85,7 @@ suite('globMatcher Test Suite', () => {
 		});
 
 		test('case insensitive matching', () => {
-			const uri = createMockUri('/project/.ENV');
+			const uri = createMockUri('/project/.Env');
 			const patterns = ['**/.env*'];
 			
 			assert.strictEqual(matchesGlobPatterns(uri, patterns), true);
@@ -111,7 +111,7 @@ suite('Configuration Tests', () => {
 		
 		// Test default values
 		assert.strictEqual(config.get('enable'), true);
-		assert.strictEqual(config.get('maskMode'), 'solid');
+		assert.strictEqual(config.get('maskMode'), 'partial');
 		assert.strictEqual(config.get('hoverReveal'), false);
 		assert.strictEqual(config.get('revealHoldMs'), 3000);
 	});

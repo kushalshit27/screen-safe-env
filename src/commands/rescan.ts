@@ -20,11 +20,11 @@ export function createRescanHandler(decorationManager: DecorationManager): () =>
 		if (editor && shouldProcessDocument(editor.document)) {
 			decorationManager.applyDecorations(editor);
 			vscode.window.showInformationMessage(
-				'Screen Safe ENV: File rescanned.'
+				'Screen Safe Env: File rescanned.'
 			);
 		} else {
 			vscode.window.showWarningMessage(
-				'Screen Safe ENV: No .env file is currently active.'
+				'Screen Safe Env: No .env file is currently active.'
 			);
 		}
 	};

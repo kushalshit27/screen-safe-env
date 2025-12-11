@@ -25,16 +25,16 @@ function createMockDocument(
 
 suite('jsonParser Test Suite', () => {
 	suite('parseJsonDocument', () => {
-		test('parses simple key-value pairs', () => {
+		test('parses simple key-value pairs with quotes included', () => {
 			const doc = createMockDocument('{\n  "api_key": "secret123",\n  "db_host": "localhost"\n}');
 			const entries = parseJsonDocument(doc as any);
 
 			assert.strictEqual(entries.length, 2);
 			assert.strictEqual(entries[0].key, 'api_key');
-			assert.strictEqual(entries[0].value, 'secret123');
+			assert.strictEqual(entries[0].value, '"secret123"');  // Includes quotes
 			assert.strictEqual(entries[0].line, 1);
 			assert.strictEqual(entries[1].key, 'db_host');
-			assert.strictEqual(entries[1].value, 'localhost');
+			assert.strictEqual(entries[1].value, '"localhost"');  // Includes quotes
 			assert.strictEqual(entries[1].line, 2);
 		});
 
@@ -44,16 +44,7 @@ suite('jsonParser Test Suite', () => {
 
 			assert.strictEqual(entries.length, 1);
 			assert.strictEqual(entries[0].key, 'password');
-			assert.strictEqual(entries[0].value, 'p@ssword');
-		});
-
-		test('handles mixed quotes', () => {
-			const doc = createMockDocument('{\n  "key": \'value\'\n}');
-			const entries = parseJsonDocument(doc as any);
-
-			assert.strictEqual(entries.length, 1);
-			assert.strictEqual(entries[0].key, 'key');
-			assert.strictEqual(entries[0].value, 'value');
+			assert.strictEqual(entries[0].value, "'p@ssword'");  // Includes quotes
 		});
 
 		test('handles empty values', () => {
@@ -62,7 +53,7 @@ suite('jsonParser Test Suite', () => {
 
 			assert.strictEqual(entries.length, 1);
 			assert.strictEqual(entries[0].key, 'empty');
-			assert.strictEqual(entries[0].value, '');
+			assert.strictEqual(entries[0].value, '""');  // Empty but with quotes
 		});
 
 		test('handles multiple values on same line', () => {
@@ -71,20 +62,22 @@ suite('jsonParser Test Suite', () => {
 
 			assert.strictEqual(entries.length, 2);
 			assert.strictEqual(entries[0].key, 'key1');
-			assert.strictEqual(entries[0].value, 'value1');
+			assert.strictEqual(entries[0].value, '"value1"');
 			assert.strictEqual(entries[1].key, 'key2');
-			assert.strictEqual(entries[1].value, 'value2');
+			assert.strictEqual(entries[1].value, '"value2"');
 		});
 
-		test('calculates correct value positions', () => {
+		test('calculates correct value positions including quotes', () => {
 			const doc = createMockDocument('{\n  "api_key": "secret"\n}');
 			const entries = parseJsonDocument(doc as any);
 
 			assert.strictEqual(entries.length, 1);
 			// Line: '  "api_key": "secret"'
-			// Position of 'secret' starts after the opening quote
-			assert.strictEqual(entries[0].valueStart, 14);
-			assert.strictEqual(entries[0].valueEnd, 20);
+			// valueStart is at the opening quote (position 13)
+			// valueEnd is after the closing quote (position 21)
+			assert.strictEqual(entries[0].valueStart, 13);
+			assert.strictEqual(entries[0].valueEnd, 21);
+			assert.strictEqual(entries[0].value, '"secret"');
 		});
 
 		test('ignores numeric values', () => {
@@ -110,9 +103,9 @@ suite('jsonParser Test Suite', () => {
 
 			assert.strictEqual(entries.length, 2);
 			assert.strictEqual(entries[0].key, 'host');
-			assert.strictEqual(entries[0].value, 'localhost');
+			assert.strictEqual(entries[0].value, '"localhost"');
 			assert.strictEqual(entries[1].key, 'password');
-			assert.strictEqual(entries[1].value, 'secret');
+			assert.strictEqual(entries[1].value, '"secret"');
 		});
 
 		test('handles values with special characters', () => {
@@ -121,7 +114,7 @@ suite('jsonParser Test Suite', () => {
 
 			assert.strictEqual(entries.length, 1);
 			assert.strictEqual(entries[0].key, 'url');
-			assert.strictEqual(entries[0].value, 'https://example.com?foo=bar');
+			assert.strictEqual(entries[0].value, '"https://example.com?foo=bar"');
 		});
 
 		test('handles values with spaces', () => {
@@ -129,7 +122,7 @@ suite('jsonParser Test Suite', () => {
 			const entries = parseJsonDocument(doc as any);
 
 			assert.strictEqual(entries.length, 1);
-			assert.strictEqual(entries[0].value, 'Hello World');
+			assert.strictEqual(entries[0].value, '"Hello World"');
 		});
 	});
 

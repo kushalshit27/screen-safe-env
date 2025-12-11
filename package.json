@@ -70,7 +70,7 @@
         },
         "screenSafeEnv.maskMode": {
           "type": "string",
-          "default": "solid",
+          "default": "partial",
           "enum": [
             "solid",
             "lengthPreserving",

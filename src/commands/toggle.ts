@@ -18,7 +18,7 @@ export async function toggleHideShow(): Promise<void> {
 	await config.update('enable', !current, vscode.ConfigurationTarget.Global);
 	
 	vscode.window.showInformationMessage(
-		`Screen Safe ENV: Masking ${!current ? 'enabled' : 'disabled'}.`
+		`Screen Safe Env: Masking ${!current ? 'enabled' : 'disabled'}.`
 	);
 }
 

@@ -211,7 +211,7 @@ suite('HoverProvider Test Suite', () => {
 				const markdown = hover.contents[0] as vscode.MarkdownString;
 				assert.ok(
 					markdown.value.includes('screen sharing') || 
-					markdown.value.includes('Screen Safe ENV'),
+					markdown.value.includes('Screen Safe Env'),
 					'Hover should contain privacy warning'
 				);
 			}

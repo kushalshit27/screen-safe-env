@@ -159,9 +159,9 @@ suite('envParser Test Suite', () => {
 			const entries: EnvEntry[] = [
 				{ key: 'API_KEY', value: 'secret', line: 0, valueStart: 8, valueEnd: 14 },
 				{ key: 'DEBUG', value: 'true', line: 1, valueStart: 6, valueEnd: 10 },
-				{ key: 'NODE_ENV', value: 'prod', line: 2, valueStart: 9, valueEnd: 13 },
+				{ key: 'NODE_Env', value: 'prod', line: 2, valueStart: 9, valueEnd: 13 },
 			];
-			const excludePatterns = ['DEBUG', 'NODE_ENV'];
+			const excludePatterns = ['DEBUG', 'NODE_Env'];
 
 			const filtered = filterExcludedKeys(entries, excludePatterns);
 

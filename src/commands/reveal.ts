@@ -21,7 +21,7 @@ export function createRevealHandler(decorationManager: DecorationManager): () =>
 		decorationManager.clearAllDecorations();
 		
 		vscode.window.showInformationMessage(
-			`Screen Safe ENV: Values revealed for ${revealMs / 1000}s...`
+			`Screen Safe Env: Values revealed for ${revealMs / 1000}s...`
 		);
 
 		// Re-apply after timeout

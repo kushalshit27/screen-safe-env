@@ -1,6 +1,6 @@
 /**
  * extension.ts
- * Main entry point for the Screen Safe ENV VS Code extension.
+ * Main entry point for the Screen Safe Env VS Code extension.
  */
 
 import * as vscode from 'vscode';
@@ -29,10 +29,10 @@ function updateStatusBar(): void {
 	const config = vscode.workspace.getConfiguration('screenSafeEnv');
 	const enabled = config.get<boolean>('enable', true);
 
-	statusBarItem.text = enabled ? '$(eye-closed) ENV Masked' : '$(eye) ENV Visible';
+	statusBarItem.text = enabled ? '$(eye-closed) Masked' : '$(eye) Visible';
 	statusBarItem.tooltip = enabled
-		? 'Screen Safe ENV: Values are masked. Click to reveal.'
-		: 'Screen Safe ENV: Values are visible. Click to mask.';
+		? 'Screen Safe Env: Values are masked. Click to reveal.'
+		: 'Screen Safe Env: Values are visible. Click to mask.';
 	statusBarItem.show();
 }
 
@@ -52,7 +52,7 @@ function debouncedRefresh(editor: vscode.TextEditor): void {
 // Activation
 // ─────────────────────────────────────────────────────────────
 export function activate(context: vscode.ExtensionContext): void {
-	console.log('Screen Safe ENV extension is now active.');
+	console.log('Screen Safe Env extension is now active.');
 
 	// Initialize DecorationManager
 	decorationManager = new DecorationManager();
@@ -134,5 +134,5 @@ export function deactivate(): void {
 	if (decorationManager) {
 		decorationManager.dispose();
 	}
-	console.log('Screen Safe ENV extension is now deactivated.');
+	console.log('Screen Safe Env extension is now deactivated.');
 }
