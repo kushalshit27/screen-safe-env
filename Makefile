@@ -23,4 +23,4 @@ vsix: package
 	npx @vscode/vsce package
 
 clean:
-	rm -rf dist out *.vsix .vscode-test
+	rm -rf dist node_modules out *.vsix .vscode-test
