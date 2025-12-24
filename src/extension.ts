@@ -1,26 +1,138 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+/**
+ * extension.ts
+ * Main entry point for the Screen Safe Env VS Code extension.
+ */
+
 import * as vscode from 'vscode';
+import { DecorationManager } from './decorationManager';
+import {
+	registerToggleCommand,
+	registerRevealCommand,
+	registerRescanCommand,
+	TOGGLE_COMMAND_ID,
+} from './commands';
+import { registerHoverProvider } from './hoverProvider';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+// ─────────────────────────────────────────────────────────────
+// Global State
+// ─────────────────────────────────────────────────────────────
+let statusBarItem: vscode.StatusBarItem;
+let decorationManager: DecorationManager;
+let debounceTimer: NodeJS.Timeout | undefined;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "screen-safe-env" is now active!');
+const DEBOUNCE_MS = 150;
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('screen-safe-env.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from screen-safe-env!');
-	});
+/**
+ * Updates the status bar item text and tooltip based on the current enable state.
+ */
+function updateStatusBar(): void {
+	const config = vscode.workspace.getConfiguration('screenSafeEnv');
+	const enabled = config.get<boolean>('enable', true);
 
-	context.subscriptions.push(disposable);
+	statusBarItem.text = enabled ? '$(eye-closed) Masked' : '$(eye) Visible';
+	statusBarItem.tooltip = enabled
+		? 'Screen Safe Env: Values are masked. Click to reveal.'
+		: 'Screen Safe Env: Values are visible. Click to mask.';
+	statusBarItem.show();
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+/**
+ * Debounced decoration refresh for the active editor.
+ */
+function debouncedRefresh(editor: vscode.TextEditor): void {
+	if (debounceTimer) {
+		clearTimeout(debounceTimer);
+	}
+	debounceTimer = setTimeout(() => {
+		decorationManager.applyDecorations(editor);
+	}, DEBOUNCE_MS);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Activation
+// ─────────────────────────────────────────────────────────────
+export function activate(context: vscode.ExtensionContext): void {
+	console.log('Screen Safe Env extension is now active.');
+
+	// Initialize DecorationManager
+	decorationManager = new DecorationManager();
+	context.subscriptions.push({ dispose: () => decorationManager.dispose() });
+
+	// ─────────────────────────────────────────────────────────
+	// Status Bar
+	// ─────────────────────────────────────────────────────────
+	statusBarItem = vscode.window.createStatusBarItem(
+		vscode.StatusBarAlignment.Right,
+		100
+	);
+	statusBarItem.command = TOGGLE_COMMAND_ID;
+	context.subscriptions.push(statusBarItem);
+	updateStatusBar();
+
+	// ─────────────────────────────────────────────────────────
+	// Register Commands
+	// ─────────────────────────────────────────────────────────
+	registerToggleCommand(context);
+	registerRevealCommand(context, decorationManager);
+	registerRescanCommand(context, decorationManager);
+
+	// ─────────────────────────────────────────────────────────
+	// Register Hover Provider
+	// ─────────────────────────────────────────────────────────
+	registerHoverProvider(context);
+
+	// ─────────────────────────────────────────────────────────
+	// Initial Decorations
+	// ─────────────────────────────────────────────────────────
+	if (vscode.window.activeTextEditor) {
+		decorationManager.applyDecorations(vscode.window.activeTextEditor);
+	}
+
+	// ─────────────────────────────────────────────────────────
+	// Event: Active Editor Changed
+	// ─────────────────────────────────────────────────────────
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor((editor) => {
+			if (editor) {
+				decorationManager.applyDecorations(editor);
+			}
+		})
+	);
+
+	// ─────────────────────────────────────────────────────────
+	// Event: Document Changed (debounced)
+	// ─────────────────────────────────────────────────────────
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeTextDocument((event) => {
+			const editor = vscode.window.activeTextEditor;
+			if (editor && event.document === editor.document) {
+				debouncedRefresh(editor);
+			}
+		})
+	);
+
+	// ─────────────────────────────────────────────────────────
+	// Event: Configuration Changed
+	// ─────────────────────────────────────────────────────────
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration('screenSafeEnv')) {
+				updateStatusBar();
+				decorationManager.onConfigurationChanged();
+			}
+		})
+	);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Deactivation
+// ─────────────────────────────────────────────────────────────
+export function deactivate(): void {
+	if (debounceTimer) {
+		clearTimeout(debounceTimer);
+	}
+	if (decorationManager) {
+		decorationManager.dispose();
+	}
+	console.log('Screen Safe Env extension is now deactivated.');
+}

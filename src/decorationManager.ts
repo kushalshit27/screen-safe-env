@@ -1,0 +1,234 @@
+/**
+ * decorationManager.ts
+ * Manages text decorations for masking config values in VS Code.
+ */
+
+import * as vscode from 'vscode';
+import { parseConfigDocument, filterExcludedKeys, EnvEntry } from './parsers';
+import { shouldProcessDocument } from './utils/globMatcher';
+
+export type MaskMode = 'solid' | 'lengthPreserving' | 'partial';
+
+/**
+ * DecorationManager handles creating and applying decorations to mask
+ * environment variable values in .env files.
+ */
+export class DecorationManager {
+	private decorationType: vscode.TextEditorDecorationType | undefined;
+	private readonly disposables: vscode.Disposable[] = [];
+
+	constructor() {
+		this.createDecorationType();
+	}
+
+	/**
+	 * Creates or recreates the decoration type based on current configuration.
+	 */
+	private createDecorationType(): void {
+		// Dispose existing decoration type if any
+		if (this.decorationType) {
+			this.decorationType.dispose();
+		}
+
+		// Create decoration that hides the original text visually but keeps it interactable
+		// Using color: 'transparent' allows hover events to still work (unlike opacity: '0')
+		// The mask is rendered using 'before' pseudo-element in per-decoration renderOptions
+		this.decorationType = vscode.window.createTextEditorDecorationType({
+			color: 'transparent',  // Hide text color while keeping element interactable for hover
+			textDecoration: 'none',
+		});
+	}
+
+	/**
+	 * Gets the current mask mode from configuration.
+	 */
+	private getMaskMode(documentUri?: vscode.Uri): MaskMode {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
+		return config.get<MaskMode>('maskMode', 'partial');
+	}
+
+	/**
+	 * Gets the excluded keys from configuration.
+	 */
+	private getExcludedKeys(documentUri?: vscode.Uri): string[] {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
+		return config.get<string[]>('excludeKeys', ['PORT', 'DEBUG']);
+	}
+
+	/**
+	 * Checks if masking is enabled.
+	 */
+	private isEnabled(documentUri?: vscode.Uri): boolean {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv', documentUri);
+		return config.get<boolean>('enable', true);
+	}
+
+	/**
+	 * Generates a mask string based on the mask mode and value.
+	 * For JSON values that include quotes (e.g., "secret"), the mask preserves the quote style.
+	 */
+	private generateMask(value: string, mode: MaskMode): string {
+		if (value.length === 0) {
+			return '';
+		}
+
+		// Check if value is a quoted JSON string (starts and ends with same quote)
+		const isQuotedJson = (value.startsWith('"') && value.endsWith('"')) ||
+							  (value.startsWith("'") && value.endsWith("'"));
+		
+		if (isQuotedJson) {
+			const quote = value[0];
+			const innerValue = value.slice(1, -1);  // Remove quotes
+			const maskedInner = this.generateMaskForInnerValue(innerValue, mode);
+			return quote + maskedInner + quote;
+		}
+
+		return this.generateMaskForInnerValue(value, mode);
+	}
+
+	/**
+	 * Generates mask for the inner value (without quotes).
+	 */
+	private generateMaskForInnerValue(value: string, mode: MaskMode): string {
+		if (value.length === 0) {
+			return '';
+		}
+
+		switch (mode) {
+			case 'solid':
+				return '*****';
+
+			case 'lengthPreserving':
+				return '*'.repeat(value.length);
+
+			case 'partial':
+				if (value.length <= 4) {
+					return '*'.repeat(value.length);
+				}
+				// Show first and last 2 characters
+				const first = value.substring(0, 2);
+				const last = value.substring(value.length - 2);
+				const middle = '*'.repeat(Math.max(value.length - 4, 3));
+				return `${first}${middle}${last}`;
+
+			default:
+				return '*****';
+		}
+	}
+
+	/**
+	 * Applies decorations to the given text editor.
+	 */
+	public applyDecorations(editor: vscode.TextEditor): void {
+		if (!this.decorationType) {
+			return;
+		}
+
+		// Check if masking is enabled
+		if (!this.isEnabled(editor.document.uri)) {
+			this.clearDecorations(editor);
+			return;
+		}
+
+		// Check if this document should be processed (language + glob patterns)
+		if (!shouldProcessDocument(editor.document)) {
+			return;
+		}
+
+		const entries = parseConfigDocument(editor.document);
+		const filteredEntries = filterExcludedKeys(entries, this.getExcludedKeys(editor.document.uri));
+		const maskMode = this.getMaskMode(editor.document.uri);
+
+		const decorations: vscode.DecorationOptions[] = filteredEntries
+			.filter((entry) => entry.value.length > 0) // Skip empty values
+			.map((entry) => this.createDecoration(entry, maskMode));
+
+		editor.setDecorations(this.decorationType, decorations);
+	}
+
+	/**
+	 * Creates a decoration option for a single entry.
+	 */
+	private createDecoration(
+		entry: EnvEntry,
+		mode: MaskMode
+	): vscode.DecorationOptions {
+		const range = new vscode.Range(
+			entry.line,
+			entry.valueStart,
+			entry.line,
+			entry.valueEnd
+		);
+
+		const maskText = this.generateMask(entry.value, mode);
+
+		// Calculate the width to pull the mask back over the hidden text
+		// We use a CSS trick: hide the original text and position the mask at the start
+		return {
+			range,
+			renderOptions: {
+				before: {
+					contentText: maskText,
+					color: new vscode.ThemeColor('editorInfo.foreground'),
+					backgroundColor: new vscode.ThemeColor('editor.selectionBackground'),
+					fontStyle: 'normal',
+				},
+			},
+		};
+	}
+
+	/**
+	 * Clears all decorations from the given editor.
+	 */
+	public clearDecorations(editor: vscode.TextEditor): void {
+		if (this.decorationType) {
+			editor.setDecorations(this.decorationType, []);
+		}
+	}
+
+	/**
+	 * Clears decorations from all visible editors.
+	 */
+	public clearAllDecorations(): void {
+		if (this.decorationType) {
+			for (const editor of vscode.window.visibleTextEditors) {
+				editor.setDecorations(this.decorationType, []);
+			}
+		}
+	}
+
+	/**
+	 * Refreshes decorations for all visible dotenv editors.
+	 */
+	public refreshAllDecorations(): void {
+		for (const editor of vscode.window.visibleTextEditors) {
+			if (shouldProcessDocument(editor.document)) {
+				this.applyDecorations(editor);
+			} else {
+				this.clearDecorations(editor);
+			}
+		}
+	}
+
+	/**
+	 * Called when configuration changes - recreates decoration type if needed.
+	 */
+	public onConfigurationChanged(): void {
+		// Refresh decorations with new settings
+		this.refreshAllDecorations();
+	}
+
+	/**
+	 * Disposes all resources.
+	 */
+	public dispose(): void {
+		if (this.decorationType) {
+			this.decorationType.dispose();
+			this.decorationType = undefined;
+		}
+		for (const disposable of this.disposables) {
+			disposable.dispose();
+		}
+		this.disposables.length = 0;
+	}
+}

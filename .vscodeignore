@@ -12,3 +12,9 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+.github/**
+guidelines-README.md
+plan/**
+.DS_Store
+Makefile
+HOW-TO-USE.md
