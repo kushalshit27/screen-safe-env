@@ -1,7 +1,7 @@
 {
   "name": "screen-safe-env",
   "displayName": "Screen Safe Env",
-  "description": "Hide(Mask) sensitive env/dotenv/config variables in VS Code during screen sharing, streaming, or recording.",
+  "description": "Hide(Mask/Cloak) sensitive env/dotenv/config variables in VS Code during screen sharing, streaming, or recording.",
   "version": "1.0.0",
   "publisher": "kushals",
   "icon": "images/icon.png",
@@ -18,7 +18,8 @@
     "vscode": "^1.90.2"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Programming Languages"
   ],
   "keywords": [
     "env",
