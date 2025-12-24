@@ -202,8 +202,10 @@ export class DecorationManager {
 	 */
 	public refreshAllDecorations(): void {
 		for (const editor of vscode.window.visibleTextEditors) {
-			if (editor.document.languageId === 'dotenv') {
+			if (shouldProcessDocument(editor.document)) {
 				this.applyDecorations(editor);
+			} else {
+				this.clearDecorations(editor);
 			}
 		}
 	}

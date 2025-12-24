@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 suite('Commands Test Suite', () => {
 	// Ensure extension is activated
 	suiteSetup(async () => {
-		const ext = vscode.extensions.getExtension('kushalshit27.screen-safe-env');
+		const ext = vscode.extensions.getExtension('kushals.screen-safe-env');
 		if (ext && !ext.isActive) {
 			await ext.activate();
 		}
@@ -107,7 +107,7 @@ suite('Commands Test Suite', () => {
 
 	suite('Keybindings', () => {
 		test('keybindings are defined in package.json', () => {
-			const ext = vscode.extensions.getExtension('kushalshit27.screen-safe-env');
+			const ext = vscode.extensions.getExtension('kushals.screen-safe-env');
 			assert.ok(ext, 'Extension should exist');
 
 			const packageJson = ext?.packageJSON;
