@@ -9,6 +9,17 @@
 
 ![Screen Safe Env Demo](images/demo.gif)
 
+VS Code `settings.json` demo configuration options for Screen-Safe-Env.
+
+```json
+{
+  "screenSafeEnv.maskMode": "partial",
+  "screenSafeEnv.include": ["*.env", "config*.json", "config*.yml"],
+  "screenSafeEnv.hoverReveal": true,
+  "screenSafeEnv.revealHoldMs": 3000
+}
+```
+
 Screen-Safe-Env helps developers protect sensitive data (like API keys, passwords, and tokens) in `.env`, JSON, and YAML config files by visually masking them in the editor. The underlying file content remains unchanged—only the display is altered.
 
 ## Features
@@ -23,11 +34,11 @@ Screen-Safe-Env helps developers protect sensitive data (like API keys, password
 
 ## Supported File Types
 
-| File Type | Extensions | Example |
-|-----------|------------|---------|
-| Environment | `.env`, `.env.local`, `.env.*` | `API_KEY=secret` |
-| JSON | `.json` | `"apiKey": "secret"` |
-| YAML | `.yaml`, `.yml` | `apiKey: secret` |
+| File Type   | Extensions                     | Example              |
+| ----------- | ------------------------------ | -------------------- |
+| Environment | `.env`, `.env.local`, `.env.*` | `API_KEY=secret`     |
+| JSON        | `.json`                        | `"apiKey": "secret"` |
+| YAML        | `.yaml`, `.yml`                | `apiKey: secret`     |
 
 ## Usage
 
@@ -49,7 +60,12 @@ You can customize the extension in your VS Code `settings.json`. The extension s
 {
   "screenSafeEnv.enable": true,
   "screenSafeEnv.maskMode": "partial",
-  "screenSafeEnv.include": ["**/.env*", "*.env", "**/config.json", "**/secrets.yaml"],
+  "screenSafeEnv.include": [
+    "**/.env*",
+    "*.env",
+    "**/config.json",
+    "**/secrets.yaml"
+  ],
   "screenSafeEnv.excludeKeys": ["PORT", "DEBUG", "NODE_Env"],
   "screenSafeEnv.hoverReveal": false,
   "screenSafeEnv.revealHoldMs": 3000
@@ -58,14 +74,14 @@ You can customize the extension in your VS Code `settings.json`. The extension s
 
 #### Settings Reference
 
-| Setting | Default | Description |
-| :--- | :--- | :--- |
-| `enable` | `true` | Enable/disable the extension. |
-| `maskMode` | `"partial"` | Mask style: `"solid"`, `"lengthPreserving"`, or `"partial"`. |
-| `include` | `["**/.env*", "*.env"]` | Glob patterns for files to process (supports .env, JSON, YAML). |
-| `excludeKeys` | `["PORT", "DEBUG"]` | List of keys to keep visible (case-insensitive). |
-| `hoverReveal` | `false` | Allow revealing values by hovering over them. |
-| `revealHoldMs` | `3000` | Duration (ms) for temporary reveal. |
+| Setting        | Default                 | Description                                                     |
+| :------------- | :---------------------- | :-------------------------------------------------------------- |
+| `enable`       | `true`                  | Enable/disable the extension.                                   |
+| `maskMode`     | `"partial"`             | Mask style: `"solid"`, `"lengthPreserving"`, or `"partial"`.    |
+| `include`      | `["**/.env*", "*.env"]` | Glob patterns for files to process (supports .env, JSON, YAML). |
+| `excludeKeys`  | `["PORT", "DEBUG"]`     | List of keys to keep visible (case-insensitive).                |
+| `hoverReveal`  | `false`                 | Allow revealing values by hovering over them.                   |
+| `revealHoldMs` | `3000`                  | Duration (ms) for temporary reveal.                             |
 
 > **Tip:** Use Workspace Settings (`.vscode/settings.json`) for project-specific configurations that differ from your global preferences.
 
