@@ -18,3 +18,4 @@ plan/**
 .DS_Store
 Makefile
 HOW-TO-USE.md
+arch.md
