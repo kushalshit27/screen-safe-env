@@ -64,6 +64,40 @@ suite('Extension Test Suite', () => {
 		}
 	});
 
+	test('Extension should activate on YAML config when included', async () => {
+		const config = vscode.workspace.getConfiguration('screenSafeEnv');
+		const previousInclude = config.get<string[]>('include');
+		const target = vscode.workspace.workspaceFolders
+			? vscode.ConfigurationTarget.Workspace
+			: vscode.ConfigurationTarget.Global;
+
+		await config.update('include', ['**/*.yaml', '**/*.yml', '**/.env*', '*.env'], target);
+
+		const tmpDir = path.join(os.tmpdir(), 'screen-safe-env-tests');
+		await fs.promises.mkdir(tmpDir, { recursive: true });
+		const yamlPath = path.join(tmpDir, 'config.test.yaml');
+		await fs.promises.writeFile(yamlPath, 'apiKey: secret-value');
+
+		try {
+			const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(yamlPath));
+			await vscode.window.showTextDocument(doc);
+
+			await new Promise((resolve) => setTimeout(resolve, 500));
+
+			const ext = vscode.extensions.getExtension('kushals.screen-safe-env');
+			assert.ok(ext?.isActive, 'Extension should be active after opening included YAML file');
+		} finally {
+			await config.update('include', previousInclude, target);
+			try {
+				await fs.promises.unlink(yamlPath);
+			} catch (err) {
+				if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+					throw err;
+				}
+			}
+		}
+	});
+
 	test('Toggle command should be registered', async () => {
 		const commands = await vscode.commands.getCommands(true);
 		assert.ok(
