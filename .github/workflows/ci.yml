@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [20,24]
 
     steps:
       - name: Checkout
@@ -35,7 +35,5 @@ jobs:
       - name: Compile
         run: npm run compile
 
-      - name: Package extension (validate)
-        run: |
-          npm install -g @vscode/vsce
-          vsce package --no-dependencies
+      - name: Run tests
+        run: npm test
