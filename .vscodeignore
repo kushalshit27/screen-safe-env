@@ -19,3 +19,10 @@ plan/**
 Makefile
 HOW-TO-USE.md
 arch.md
+.env
+
+!dist/**
+!images/**
+!package.json
+!README.md
+!LICENSE
