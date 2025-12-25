@@ -1,8 +1,8 @@
 # Screen-Safe-Env
 
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/kushalshit27.screen-safe-env?style=flat-square&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/kushalshit27.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/kushalshit27.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushalshit27.screen-safe-env)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/kushals.screen-safe-env?style=flat-square&label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=kushals.screen-safe-env)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/kushals.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushals.screen-safe-env)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/kushals.screen-safe-env?style=flat-square)](https://marketplace.visualstudio.com/items?itemName=kushals.screen-safe-env)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
 **Visually conceal sensitive config values in VS Code during screen sharing, streaming, or recording.**
@@ -120,7 +120,7 @@ You can use either the **flat** or **nested** form; both are supported by VS Cod
 - **No Telemetry**: This extension does not collect, store, or transmit any data whatsoever. Your secrets remain entirely on your machine.
 - **No Network Requests**: The extension operates completely offline with no external dependencies or API calls.
 - **Workspace Trust**: The extension respects VS Code's Workspace Trust and will not operate in untrusted workspaces by default.
-- **Open Source**: All code is available for review at [GitHub](https://github.com/kushalshit27/screen-safe-env).
+- **Open Source**: All code is available for review at [GitHub](https://github.com/kushals/screen-safe-env).
 
 ## License
 
