@@ -7,7 +7,7 @@
 
 **Visually conceal sensitive config values in VS Code during screen sharing, streaming, or recording.**
 
-![Screen Safe Env Demo](images/demo.gif)
+![Screen Safe Env Demo](https://raw.githubusercontent.com/kushalshit27/screen-safe-env/main/images/demo.gif)
 
 VS Code `settings.json` demo configuration options for Screen-Safe-Env.
 
