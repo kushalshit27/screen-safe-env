@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-12-25
+
+### Changed
+
+- Updated README with demonstration GIF and additional usage instructions.
+
 ## [1.0.0] - 2025-12-03
 
 ### Added
